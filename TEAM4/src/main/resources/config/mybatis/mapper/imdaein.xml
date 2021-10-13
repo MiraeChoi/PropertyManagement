@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gm">
+	<resultMap type="gunmul" id="gmMap">
+		<result property="idx" column="idx" />
+		<result property="gun_name" column="gun_name" />
+		<result property="floor" column="floor" />
+		<result property="bang_num" column="bang_num" />
+		<result property="gujo" column="gujo" />
+		<result property="gun_img_s" column="gun_img_s" />
+		<result property="gun_img_l" column="gun_img_l" />
+		<result property="addr" column="addr" />
+		<result property="gun_park" column="gun_park" />
+		<result property="gun_option" column="gun_option" />
+		<result property="content" column="content" />
+		<result property="square" column="square" />
+		<result property="ref" column="ref" />
+		<result property="seipja_name" column="seipja_name" />
+		<result property="seipja_tel" column="seipja_tel" />
+		<result property="seipja_date_begin" column="seipja_date_begin" />
+		<result property="seipja_date_end" column="seipja_date_end" />
+		<result property="bojung" column="bojung" />
+		<result property="weolse" column="weolse" />
+		<result property="susuryo" column="susuryo" />
+		<result property="reg_gyeyak_info" column="reg_gyeyak_info" />
+		<result property="yeyak_gongin_idx" column="yeyak_gongin_idx" />
+		<result property="addr_num" column="addr_num" />
+	</resultMap>
+	
+	<resultMap type="imdaein" id="idiMap">
+		<result property="idx" column="idx" />
+		<result property="name" column="name" />
+		<result property="id" column="id" />
+		<result property="pwd" column="pw" />
+		<result property="gun_name" column="gun_name" />
+		<result property="tel" column="tel" />
+		<result property="email" column="email" />
+		
+		<collection property="gm_list" column="{idx = idx}" select="gunmul_list_idi" />
+	</resultMap>
+	
+	<!-- ref=#{idi.idx}인 건물 정보 모두 출력 -->
+	<!-- <select id="imdaein_list" resultMap="idiMap">
+		select * from Imdaein where idx=1
+	</select> -->
+	
+	<!-- 수정 -->
+	<update id="imdae_modify">
+      update imdaein set name=#{name},id=#{id},pwd=#{pwd},gun_name=#{gun_name},tel=#{tel},email=#{email} where id=#{id}
+   </update>
+   
+	<!-- 건물 테이블에서 건물주 idx가 oo이면서 공인중개사에 등록한 건물의 정보 출력(ref 나중에 수정) -->
+	<select id="maemul_list_idi" parameterType="int" resultType="gunmul">
+		select * from Gunmul where ref=#{ref} AND reg_gyeyak_info=1 order by idx desc
+	</select>
+	
+	<!-- 건물 테이블에서 건물주 idx가 oo인 사람의 건물 정보 출력 -->
+	<select id="gunmul_list_idi" parameterType="int" resultType="gunmul">
+		select * from Gunmul where ref=#{ref} order by idx desc
+	</select>
+	
+	<!-- 공인중개사에 매물 등록 -->
+	<update id="gongin_reg" parameterType="int">
+		update Gunmul
+		set reg_gyeyak_info=1
+		where idx=#{idx}
+	</update>
+	
+	<!-- 공인중개사에 등록한 매물 취소(내 건물 관리에만 있게 됨) -->
+	<update id="gongin_cancel" parameterType="int">
+		update Gunmul
+		set reg_gyeyak_info=0
+		where idx=#{idx}
+	</update>
+	
+	<!-- 새 건물 등록 -->
+	<insert id="gunmul_insert" parameterType="gunmul">
+		insert into Gunmul values(
+			seq_gunmul_idx.nextVal, #{gun_name}, #{floor}, #{bang_num}, #{gujo}, #{gun_img_s},
+			#{gun_img_l}, #{addr}, #{gun_park}, #{gun_option}, #{content}, #{square}, #{ref},
+			#{seipja_name}, #{seipja_tel}, #{seipja_date_begin}, #{seipja_date_end}, #{bojung}, #{weolse}, #{susuryo}, 0, 0, #{addr_num})
+	</insert>
+	
+	<!-- 건물 정보 1건 불러오기 -->
+	<select id="gunmul_one" parameterType="int" resultType="gunmul">
+		select * from Gunmul where idx=#{idx}
+	</select>
+	
+	<!-- 건물 정보 수정(addr_num 아직 추가 안 함) -->
+	<update id="gunmul_update" parameterType="gunmul">
+		update Gunmul
+		set gun_name=#{gun_name}, floor=#{floor}, bang_num=#{bang_num},
+			gujo=#{gujo}, gun_img_s=#{gun_img_s}, gun_img_l=#{gun_img_l}, addr=#{addr},
+			gun_park=#{gun_park}, gun_option=#{gun_option}, content=#{content}, square=#{square},
+			seipja_name=#{seipja_name}, seipja_tel=#{seipja_tel}, seipja_date_begin=#{seipja_date_begin},
+			seipja_date_end=#{seipja_date_end}, bojung=#{bojung}, weolse=#{weolse}, susuryo=#{susuryo}
+		where idx=#{idx}
+	</update>
+	
+	<!-- 건물 1건 삭제 -->
+	<delete id="gunmul_delete" parameterType="int">
+		delete from Gunmul where idx=#{idx}
+	</delete>
+</mapper>

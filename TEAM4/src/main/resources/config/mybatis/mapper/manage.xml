@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="m">
+	<!-- 공인중개사 리스트 -->
+	<select id="select_list_gong" resultType="gongin">
+		select * from GONGIN
+	</select>
+	
+	<!-- 임대인 리스트 -->
+	<select id="select_list_im" resultType="imdaein">
+		select * from IMDAEIN
+	</select>
+	
+	<!-- 수정 -->
+	<update id="manage_modify">
+      update kwanri set name=#{name},id=#{id},pwd=#{pwd} where id=#{id}
+   </update>
+   
+	<!-- 수정할 공인중개사 정보 불러오기 -->
+	<select id="select_one_gong" parameterType="int">
+		select * from GONGIN where idx=#{idx}
+	</select>
+	
+	<!-- 수정할 임대인 정보 불러오기 -->
+	<select id="select_one_im" parameterType="int">
+		select * from IMDAEIN where idx=#{idx}
+	</select>
+	
+	<!-- 공인중개사 정보 수정 -->
+	<update id="update_hyoiwon_gongin" parameterType="gongin">
+		update GONGIN set name=#{name}, gong_name=#{gong_name}, tel=#{tel}, 
+		email=#{email} where idx=#{idx}
+	</update>
+	
+	<!-- 임대인 정보 수정 -->
+	<update id="update_hyoiwon_imdaein" parameterType="imdaein">
+		update IMDAEIN set name=#{name}, gun_name=#{gun_name}, tel=#{tel}, 
+		email=#{email} where idx=#{idx}
+	</update>
+	
+	<!-- 공인중개사 정보 삭제 -->
+	<delete id="delete_hyoiwon_gongin" parameterType="int">
+		delete from GONGIN where idx=#{idx}
+	</delete>
+	
+	<!-- 임대인 정보 삭제 -->
+	<delete id="delete_hyoiwon_imdaein" parameterType="int">
+		delete from IMDAEIN where idx=#{idx}
+	</delete>
+	
+	<!-- 매물 전체보기 select -->
+	<select id="select_list_gun" resultType="gunmul">
+		select * from GUNMUL order by idx desc
+	</select>
+	
+	<!-- 매물 전체보기 에서 검색한거 select -->
+	<select id="select_search_gun_reg" parameterType="java.lang.String"
+	resultType="gunmul">
+		select * from Gunmul where reg_gyeyak_info=1 AND
+		(addr LIKE '%' ||  #{searchRegion} || '%') order by idx desc
+	</select>
+	
+	<!-- 등록된 매물 목록 select -->
+	<select id="select_list_gun_reg" resultType="gunmul">
+		select * from Gunmul where reg_gyeyak_info=1 order by idx desc
+	</select>
+	
+	<!-- 새 건물 등록 -->
+	<insert id="gunmul_insert" parameterType="gunmul">
+		insert into Gunmul values(
+		seq_gunmul_idx.nextVal, #{gun_name}, #{floor}, #{bang_num}, #{gujo}, #{gun_img_s},
+		#{gun_img_l}, #{addr}, #{gun_park}, #{gun_option}, #{content}, #{square}, #{ref},
+		#{seipja_name}, #{seipja_tel}, #{seipja_date_begin}, #{seipja_date_end}, #{bojung}, #{weolse}, #{susuryo}, 0, 0, #{addr_num})
+	</insert>
+	
+	<!-- 공인중개사에 매물 등록 -->
+	<update id="gongin_reg" parameterType="int">
+		update Gunmul
+		set reg_gyeyak_info=1
+		where idx=#{idx}
+	</update>
+	
+	<!-- 전체 건물보기에서 수정하기 -->
+	<update id="gunmul_update" parameterType="gunmul">
+		update Gunmul
+		set gun_name=#{gun_name}, floor=#{floor}, bang_num=#{bang_num},
+			gujo=#{gujo}, gun_img_s=#{gun_img_s}, gun_img_l=#{gun_img_l}, addr=#{addr},
+			gun_park=#{gun_park}, gun_option=#{gun_option}, content=#{content}, square=#{square},
+			seipja_name=#{seipja_name}, seipja_tel=#{seipja_tel}, seipja_date_begin=#{seipja_date_begin},
+			seipja_date_end=#{seipja_date_end}, bojung=#{bojung}, weolse=#{weolse}, susuryo=#{susuryo}, addr_num=#{addr_num}
+		where idx=#{idx}
+	</update>
+	
+	<update id="cancel" parameterType="int">
+		update Gunmul set reg_gyeyak_info=0 where idx=#{idx}
+	</update>
+	
+	<update id="reg" parameterType="int">
+		update Gunmul set reg_gyeyak_info=1 where idx=#{idx}
+	</update>
+</mapper>

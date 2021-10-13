@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gi">
+	<!-- 건물 테이블에서 건물주 id가 oo인 사람의 건물 정보 출력 -->
+	<select id="gongin_maemul_list" resultType="gunmul">
+		select * from Gunmul where reg_gyeyak_info=1 order by idx desc
+	</select>
+	
+		<!-- 검색한 매물 리스트 출력 -->
+	<select id="gongin_maemul_list_searchRegion" parameterType="java.lang.String"
+	 resultType="gunmul">
+		select * from Gunmul where reg_gyeyak_info=1 
+		AND addr LIKE '%' ||  #{searchRegion} || '%'  order by idx desc
+	</select>
+	
+	<!-- idx=#{idx}인 공인중개사가 매물 예약 -->
+	<update id="gongin_yeyak" parameterType="java.util.HashMap">
+		update Gunmul
+		set yeyak_gongin_idx=#{gong_idx}
+		where idx=#{gun_idx}
+	</update>
+	
+	<!-- 매물보기 건물 계약 -->
+	<update id="gongin_gyeyak" parameterType="int">
+		update Gunmul
+		set yeyak_gongin_idx=0, REG_GYEYAK_INFO=-1
+		where idx=#{gun_idx}
+	</update>
+	
+	<!-- 매물보기/ 예약리스트 건물 예약 리셋 -->
+	<update id="gongin_yeyak_reset" parameterType="int">
+		update Gunmul
+		set yeyak_gongin_idx=0
+		where idx=#{gun_idx}
+	</update>
+	
+	<!-- 예약한 매물리스트 -->
+	<select id="gongin_yeyak_list" parameterType="int" 
+		resultType="gunmul">
+		select * from Gunmul where yeyak_gongin_idx=#{yeyak_gongin_idx} order by idx desc
+	</select>
+</mapper>

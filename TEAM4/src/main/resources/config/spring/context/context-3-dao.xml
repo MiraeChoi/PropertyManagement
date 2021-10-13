@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="main_daoBean" class="dao.MainDAO">
+		<constructor-arg ref="sqlSessionBean" /> 
+	</bean>
+	
+	<bean id="info_daoBean" class="dao.InfoDAO">
+		<constructor-arg ref="sqlSessionBean" /> 
+	</bean>
+	
+	<bean id="kwanri_daoBean" class="dao.KwanriDAO">
+		<constructor-arg ref="sqlSessionBean" /> 
+	</bean>
+	
+	<bean id="gongin_daoBean" class="dao.GonginDAO">
+		<constructor-arg ref="sqlSessionBean"/>
+	</bean>
+	
+	<bean id="imdae_daoBean" class="dao.ImdaeinDAO">
+		<constructor-arg ref="sqlSessionBean" /> 
+	</bean>
+</beans>

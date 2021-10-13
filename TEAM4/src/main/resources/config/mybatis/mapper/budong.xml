@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="b">
+	<!-- 공인중개사 회원가입 -->
+	<insert id="gongin_insert" parameterType="gongin">
+		insert into gongin values(
+			seq_gong_idx.nextVal,
+			#{name},
+			#{id},
+			#{pwd},
+			#{gong_name},
+			#{gong_reg},
+			#{tel},
+			#{email}
+		)
+	</insert>
+	
+	<!-- 임대인 회원가입 -->
+	<insert id="imdae_insert" parameterType="imdaein">
+		insert into imdaein values(
+			seq_imdaein_idx.nextVal,
+			#{name},
+			#{id},
+			#{pwd},
+			#{gun_name},
+			#{tel},
+			#{email}
+		)
+	</insert>
+		
+	<!-- DB에서 찾고자하는 관리사 ID 정보 가져오기 -->
+	<select id="kwanri_one" parameterType="java.lang.String" resultType="kwanri">
+		select * from kwanri where id=#{id}
+	</select>
+	
+	<!-- DB에서 찾고자하는 공인중개사 ID 정보 가져오기 -->
+	<select id="gongin_one" parameterType="java.lang.String" resultType="gongin">
+		select * from gongin where id=#{id}
+	</select>
+	
+	<!-- DB에서 찾고자하는 임대인 ID 정보 가져오기 -->
+	<select id="imdae_one" parameterType="java.lang.String" resultType="imdaein">
+		select * from imdaein where id=#{id}
+	</select>
+	
+	<!-- 전체 게시글 조회 -->
+	<select resultType="info" id="info_list">
+		select * from info order by ref desc, step 
+	</select>
+
+	<!-- 새글 쓰기 -->
+	<insert id="info_insert" parameterType="info">
+		insert into info values(
+			seq_info_idx.nextVal,
+			#{name},
+			#{subject},
+			#{content},
+			#{pwd},
+			#{ip},
+			sysdate,
+			0,
+			seq_info_idx.currVal,
+			0,
+			0,
+			0
+		) 
+	</insert>
+
+	<!-- idx에 해당하는 게시글 조회 -->
+	<select resultType="info" id="info_one" parameterType="int">
+		select * from info where idx=#{idx}
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="info_update_readhit" parameterType="int">
+		update info set readhit=readhit+1 where idx=#{idx} 
+	</update>
+
+	<!-- step값 1씩 증가 -->
+	<update id="info_update_step" parameterType="info">
+		update info set step=step+1 where ref=#{ref} and step>#{step} 
+	</update>
+
+	<!-- 댓글 달기 -->
+	<insert id="info_reply" parameterType="info">
+		insert into info values(
+			seq_info_idx.nextVal,
+			#{name},
+			#{subject},
+			#{content},
+			#{pwd},
+			#{ip},
+			sysdate,
+			0,
+			#{ref},
+			#{step},
+			#{depth},
+			0
+		) 
+	</insert>
+
+	<!-- 삭제하고자 하는 게시글 검색 -->
+	<select resultType="info" id="info_idx_pwd" parameterType="java.util.HashMap">
+		select * from info where idx=#{idx} and pwd=#{pwd} 
+	</select>
+
+	<!-- 게시글 삭제(된 것 처럼 업데이트) -->
+	<update id="info_del_update" parameterType="info">
+		update info set subject=#{subject}, name=#{name}, del_info=-1 where idx=#{idx} 
+	</update>
+
+	<!-- 페이지에 따른 게시물 조회 -->
+	<select resultType="info" id="info_list_condition" parameterType="java.util.Map">
+		select * from( select rank() over( order by ref desc, step ) no, b.*from ( select * from info ) b )
+		where no between #{start} and #{end}
+	</select>
+
+	<!-- 전체 게시물 수 조회 -->
+	<select resultType="int" id="info_count">
+		select count(*) from info
+	</select>
+	
+	<!-- 게시글 수정 -->
+	<update id="info_modify" parameterType="info">
+		update info set subject=#{subject}, name=#{name}, content=#{content} where idx=#{idx}
+	</update>
+	
+	<!-- addr에 주소값이 포함되있는 모든 vo를 list에 담기 -->
+	<select id="select_gunmul_list_addr" parameterType="java.lang.String"
+		resultType="gunmul">
+		select * from gunmul where (addr LIKE '%' ||  #{addr} || '%') AND reg_gyeyak_info=1
+	</select>
+	
+	<select id="get_polygon" parameterType="java.lang.String" resultType="polygon">
+		select * from polygon where location=#{location}
+	</select>
+	
+	<!-- 공인중개사 회원정보수정 -->
+   <update id="gongin_modify">
+      update gongin set name=#{name},id=#{id},pwd=#{pwd},gong_name=#{gong_name},gong_reg=#{gong_reg},tel=#{tel},email=#{email} where id=#{id}
+   </update>
+</mapper>
